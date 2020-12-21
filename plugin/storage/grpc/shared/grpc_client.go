@@ -83,6 +83,11 @@ func (c *grpcClient) ArchiveSpanWriter() spanstore.Writer {
 	return &archiveWriter{client: c.archiveWriterClient}
 }
 
+// GetNodes can't used
+func (c *grpcClient) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+	return nil, fmt.Errorf("GetNodes not implemented")
+}
+
 // GetTrace takes a traceID and returns a Trace associated with that traceID
 func (c *grpcClient) GetTrace(ctx context.Context, traceID model.TraceID) (*model.Trace, error) {
 	stream, err := c.readerClient.GetTrace(upgradeContextWithBearerToken(ctx), &storage_v1.GetTraceRequest{

@@ -239,6 +239,10 @@ func (s *SpanReader) unmarshalJSONSpan(esSpanRaw *elastic.SearchHit) (*dbmodel.S
 	return &jsonSpan, nil
 }
 
+func (s *SpanReader) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+	return nil,errors.New("GetNodes not implemented")
+}
+
 // GetServices returns all services traced by Jaeger, ordered by frequency
 func (s *SpanReader) GetServices(ctx context.Context) ([]string, error) {
 	span, ctx := opentracing.StartSpanFromContext(ctx, "GetServices")

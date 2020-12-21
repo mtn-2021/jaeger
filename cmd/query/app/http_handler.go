@@ -117,6 +117,7 @@ func (aH *APIHandler) RegisterRoutes(router *mux.Router) {
 	// TODO - remove this when UI catches up
 	aH.handleFunc(router, aH.getOperationsLegacy, "/services/{%s}/operations", serviceParam).Methods(http.MethodGet)
 	aH.handleFunc(router, aH.dependencies, "/dependencies").Methods(http.MethodGet)
+	aH.handleFunc(router, aH.getNodes, "/nodes").Methods(http.MethodGet)
 }
 
 func (aH *APIHandler) handleFunc(
@@ -138,6 +139,22 @@ func (aH *APIHandler) handleFunc(
 func (aH *APIHandler) route(route string, args ...interface{}) string {
 	args = append([]interface{}{aH.apiPrefix}, args...)
 	return fmt.Sprintf("/%s"+route, args...)
+}
+
+func (aH *APIHandler) getNodes(w http.ResponseWriter, r *http.Request) {
+	nodes, err := aH.queryService.GetNodes(r.Context())
+	if aH.handleError(w, err, http.StatusInternalServerError){
+		return
+	}
+	var nodeList []string
+	for k := range nodes {
+		nodeList = append(nodeList, k)
+	}
+	structuredRes := structuredResponse{
+		Data: nodeList,
+		Total: len(nodeList),
+	}
+	aH.writeJSON(w, r, &structuredRes)
 }
 
 func (aH *APIHandler) getServices(w http.ResponseWriter, r *http.Request) {

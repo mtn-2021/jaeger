@@ -68,6 +68,11 @@ const (
 	// limitMultiple exists because many spans that are returned from indices can have the same trace, limitMultiple increases
 	// the number of responses from the index, so we can respect the user's limit value they provided.
 	limitMultiple = 3
+	queryGetNodes = `
+		SELECT tag_value 
+		FROM tag_index 
+		WHERE tag_key = 'ip'
+		PER PARTITION LIMIT 1`
 )
 
 var (
@@ -401,6 +406,21 @@ func (s *SpanReader) queryByService(ctx context.Context, tq *spanstore.TraceQuer
 		tq.NumTraces*limitMultiple,
 	).PageSize(0)
 	return s.executeQuery(span, query, s.metrics.queryServiceNameIndex)
+}
+
+func (s *SpanReader) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+	var node string
+	nodes := map[string]struct{}{}
+	iter := s.session.Query(queryGetNodes).Iter()
+	for iter.Scan(&node) {
+		nodes[node] = struct{}{}
+	}
+
+	err := iter.Close()
+	if err != nil {
+		return nil, err
+	}
+	return nodes, err
 }
 
 func (s *SpanReader) executeQuery(span opentracing.Span, query cassandra.Query, tableMetrics *casMetrics.Table) (dbmodel.UniqueTraceIDs, error) {

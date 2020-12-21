@@ -57,6 +57,11 @@ func (r *archiveReader) GetTrace(ctx context.Context, traceID model.TraceID) (*m
 	return readTrace(stream)
 }
 
+// GetNodes can't used
+func (r *archiveReader) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+	return nil, errors.New("GetNodes not implemented")
+}
+
 // GetServices not used in archiveReader
 func (r *archiveReader) GetServices(ctx context.Context) ([]string, error) {
 	return nil, errors.New("GetServices not implemented")

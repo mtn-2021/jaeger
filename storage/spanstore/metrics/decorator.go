@@ -31,6 +31,7 @@ type ReadMetricsDecorator struct {
 	findTracesMetrics    *queryMetrics
 	findTraceIDsMetrics  *queryMetrics
 	getTraceMetrics      *queryMetrics
+	getNodesMetrics      *queryMetrics
 	getServicesMetrics   *queryMetrics
 	getOperationsMetrics *queryMetrics
 }
@@ -94,6 +95,13 @@ func (m *ReadMetricsDecorator) GetTrace(ctx context.Context, traceID model.Trace
 	start := time.Now()
 	retMe, err := m.spanReader.GetTrace(ctx, traceID)
 	m.getTraceMetrics.emit(err, time.Since(start), 1)
+	return retMe, err
+}
+
+func (m *ReadMetricsDecorator) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+	start := time.Now()
+	retMe, err := m.spanReader.GetNodes(ctx)
+	m.getServicesMetrics.emit(err, time.Since(start), len(retMe))
 	return retMe, err
 }
 

@@ -175,6 +175,10 @@ func (m *Store) copyTrace(trace *model.Trace) *model.Trace {
 	}
 }
 
+func (m *Store) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+	return nil,errors.New("GetNodes not implemented")
+}
+
 // GetServices returns a list of all known services
 func (m *Store) GetServices(ctx context.Context) ([]string, error) {
 	m.RLock()
