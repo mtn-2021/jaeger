@@ -240,7 +240,7 @@ func createPrimaryKeySeekPrefix(traceID model.TraceID) []byte {
 	return key
 }
 
-func (r *TraceReader) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+func (r *TraceReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	return nil,errors.New("GetNodes not implemented")
 }
 

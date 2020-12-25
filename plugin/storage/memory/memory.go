@@ -175,7 +175,7 @@ func (m *Store) copyTrace(trace *model.Trace) *model.Trace {
 	}
 }
 
-func (m *Store) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+func (m *Store) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	return nil,errors.New("GetNodes not implemented")
 }
 

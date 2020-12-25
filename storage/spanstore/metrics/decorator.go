@@ -98,7 +98,7 @@ func (m *ReadMetricsDecorator) GetTrace(ctx context.Context, traceID model.Trace
 	return retMe, err
 }
 
-func (m *ReadMetricsDecorator) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+func (m *ReadMetricsDecorator) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	start := time.Now()
 	retMe, err := m.spanReader.GetNodes(ctx)
 	m.getServicesMetrics.emit(err, time.Since(start), len(retMe))

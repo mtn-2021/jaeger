@@ -115,3 +115,8 @@ type Operation struct {
 	Name     string `json:"name"`
 	SpanKind string `json:"spanKind"`
 }
+
+type Node struct {
+	Address string `json:"address"`
+	Services []string `json:"services"`
+}

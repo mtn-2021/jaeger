@@ -68,6 +68,7 @@ const (
 	// limitMultiple exists because many spans that are returned from indices can have the same trace, limitMultiple increases
 	// the number of responses from the index, so we can respect the user's limit value they provided.
 	limitMultiple = 3
+
 	queryGetNodes = `
 		SELECT tag_value 
 		FROM tag_index 
@@ -408,12 +409,15 @@ func (s *SpanReader) queryByService(ctx context.Context, tq *spanstore.TraceQuer
 	return s.executeQuery(span, query, s.metrics.queryServiceNameIndex)
 }
 
-func (s *SpanReader) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	var node string
-	nodes := map[string]struct{}{}
+	var service string
+	nodes := map[string]spanstore.NodeServices{}
 	iter := s.session.Query(queryGetNodes).Iter()
 	for iter.Scan(&node) {
-		nodes[node] = struct{}{}
+		nodes[node] = spanstore.NodeServices{
+			Name: append(nodes[node].Name, service),
+		}
 	}
 
 	err := iter.Close()

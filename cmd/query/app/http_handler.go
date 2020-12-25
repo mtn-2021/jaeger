@@ -146,13 +146,19 @@ func (aH *APIHandler) getNodes(w http.ResponseWriter, r *http.Request) {
 	if aH.handleError(w, err, http.StatusInternalServerError){
 		return
 	}
-	var nodeList []string
-	for k := range nodes {
-		nodeList = append(nodeList, k)
+
+	data := make([]ui.Node, len(nodes))
+	i := 0
+	for key, value := range nodes {
+		data[i] = ui.Node{
+			Address: key,
+			Services: value.Name,
+		}
+		i++
 	}
 	structuredRes := structuredResponse{
-		Data: nodeList,
-		Total: len(nodeList),
+		Data: data,
+		Total: len(data),
 	}
 	aH.writeJSON(w, r, &structuredRes)
 }

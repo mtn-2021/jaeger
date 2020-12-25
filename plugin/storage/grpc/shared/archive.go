@@ -58,7 +58,7 @@ func (r *archiveReader) GetTrace(ctx context.Context, traceID model.TraceID) (*m
 }
 
 // GetNodes can't used
-func (r *archiveReader) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+func (r *archiveReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	return nil, errors.New("GetNodes not implemented")
 }
 

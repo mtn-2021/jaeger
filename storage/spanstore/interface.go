@@ -48,7 +48,7 @@ type Reader interface {
 	// known to the backend from spans within its retention period.
 	GetOperations(ctx context.Context, query OperationQueryParameters) ([]Operation, error)
 
-	GetNodes(ctx context.Context) (map[string]struct{}, error)
+	GetNodes(ctx context.Context) (map[string]NodeServices, error)
 
 	// FindTraces returns all traces matching query parameters. There's currently
 	// an implementation-dependent abiguity whether all query filters (such as
@@ -87,4 +87,8 @@ type OperationQueryParameters struct {
 type Operation struct {
 	Name     string
 	SpanKind string
+}
+
+type NodeServices struct {
+	Name []string
 }

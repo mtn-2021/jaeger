@@ -84,7 +84,7 @@ func (c *grpcClient) ArchiveSpanWriter() spanstore.Writer {
 }
 
 // GetNodes can't used
-func (c *grpcClient) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+func (c *grpcClient) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	return nil, fmt.Errorf("GetNodes not implemented")
 }
 

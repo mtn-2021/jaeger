@@ -78,7 +78,7 @@ func (qs QueryService) GetTrace(ctx context.Context, traceID model.TraceID) (*mo
 	return trace, err
 }
 
-func (qs QueryService) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+func (qs QueryService) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	return qs.spanReader.GetNodes(ctx)
 }
 
