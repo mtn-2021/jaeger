@@ -49,6 +49,8 @@ type Reader interface {
 	GetOperations(ctx context.Context, query OperationQueryParameters) ([]Operation, error)
 
 	GetNodes(ctx context.Context) (map[string]NodeServices, error)
+	GetNodeStatus(ctx context.Context, query *RequestToNodeQuery) ([]DetailLogs, error)
+	GetRequestToNode(ctx context.Context, query *RequestToNodeQuery) ([]DetailLogs, error)
 
 	// FindTraces returns all traces matching query parameters. There's currently
 	// an implementation-dependent abiguity whether all query filters (such as
@@ -91,4 +93,17 @@ type Operation struct {
 
 type NodeServices struct {
 	Name []string
+}
+
+type RequestToNodeQuery struct {
+	Node string
+	Service string
+	StartTimeMin time.Time
+	StartTimeMax time.Time
+    Interval time.Time
+}
+
+type DetailLogs struct {
+	OperationName string
+	Logs []model.Log
 }

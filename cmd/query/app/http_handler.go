@@ -118,6 +118,7 @@ func (aH *APIHandler) RegisterRoutes(router *mux.Router) {
 	aH.handleFunc(router, aH.getOperationsLegacy, "/services/{%s}/operations", serviceParam).Methods(http.MethodGet)
 	aH.handleFunc(router, aH.dependencies, "/dependencies").Methods(http.MethodGet)
 	aH.handleFunc(router, aH.getNodes, "/nodes").Methods(http.MethodGet)
+	aH.handleFunc(router, aH.getNodeDetail, "/nodes/detail").Methods(http.MethodGet)
 }
 
 func (aH *APIHandler) handleFunc(
@@ -161,6 +162,56 @@ func (aH *APIHandler) getNodes(w http.ResponseWriter, r *http.Request) {
 		Total: len(data),
 	}
 	aH.writeJSON(w, r, &structuredRes)
+}
+
+func (aH *APIHandler) getNodeDetail(w http.ResponseWriter, r *http.Request) {
+	startTime, err := aH.queryParser.parseTime(startTimeParam,r)
+	if aH.handleError(w, err, http.StatusInternalServerError){
+		return
+	}
+	endTime, err := aH.queryParser.parseTime(endTimeParam,r)
+	if aH.handleError(w, err, http.StatusInternalServerError){
+		return
+	}
+	nodeQuery := spanstore.RequestToNodeQuery{
+		Node: r.FormValue("node"),
+		Service: r.FormValue(serviceParam),
+		StartTimeMin: startTime,
+		StartTimeMax: endTime,
+	}
+
+	reqResult, err := aH.queryService.GetRequestToNode(r.Context(),&nodeQuery)
+	if aH.handleError(w, err, http.StatusInternalServerError){
+		return
+	}
+	request := aH.convertDetailToUi(reqResult)
+
+	steResult, err := aH.queryService.GetNodeStatus(r.Context(),&nodeQuery)
+	if aH.handleError(w, err, http.StatusInternalServerError){
+		return
+	}
+	status := aH.convertDetailToUi(steResult)
+
+	data := ui.NodeDetail{
+		RequestSpan: request,
+		StatusCheckSpan: status,
+	}
+	structuredRes := structuredResponse{
+		Data: data,
+	}
+	aH.writeJSON(w, r, &structuredRes)
+}
+
+func (aH *APIHandler) convertDetailToUi(result []spanstore.DetailLogs) []ui.DetailLogs {
+	uiResult := make([]ui.DetailLogs, len(result))
+	for i, v := range result {
+		logToUi := uiconv.ConvertLogs(v.Logs)
+		uiResult[i] = ui.DetailLogs{
+			OperationName: v.OperationName,
+			Logs: logToUi,
+		}
+	}
+	return uiResult
 }
 
 func (aH *APIHandler) getServices(w http.ResponseWriter, r *http.Request) {

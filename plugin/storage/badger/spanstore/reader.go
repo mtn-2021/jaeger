@@ -243,6 +243,12 @@ func createPrimaryKeySeekPrefix(traceID model.TraceID) []byte {
 func (r *TraceReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	return nil,errors.New("GetNodes not implemented")
 }
+func (r *TraceReader) GetNodeStatus(ctx context.Context, query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil,errors.New("GetNodeStatus not implemented")
+}
+func (r *TraceReader) GetRequestToNode(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil,errors.New("GetRequestToNode not implemented")
+}
 
 // GetServices fetches the sorted service list that have not expired
 func (r *TraceReader) GetServices(ctx context.Context) ([]string, error) {

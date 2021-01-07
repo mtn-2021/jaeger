@@ -239,8 +239,14 @@ func (s *SpanReader) unmarshalJSONSpan(esSpanRaw *elastic.SearchHit) (*dbmodel.S
 	return &jsonSpan, nil
 }
 
-func (s *SpanReader) GetNodes(ctx context.Context) (map[string]struct{}, error) {
+func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
 	return nil,errors.New("GetNodes not implemented")
+}
+func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil,errors.New("GetNodeStatus not implemented")
+}
+func (s *SpanReader) GetRequestToNode(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil,errors.New("GetRequestToNode not implemented")
 }
 
 // GetServices returns all services traced by Jaeger, ordered by frequency

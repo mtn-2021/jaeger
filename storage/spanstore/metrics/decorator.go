@@ -99,9 +99,15 @@ func (m *ReadMetricsDecorator) GetTrace(ctx context.Context, traceID model.Trace
 }
 
 func (m *ReadMetricsDecorator) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
-	start := time.Now()
 	retMe, err := m.spanReader.GetNodes(ctx)
-	m.getServicesMetrics.emit(err, time.Since(start), len(retMe))
+	return retMe, err
+}
+func (m *ReadMetricsDecorator) GetNodeStatus(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	retMe, err := m.spanReader.GetNodeStatus(ctx, query)
+	return retMe, err
+}
+func (m *ReadMetricsDecorator) GetRequestToNode(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	retMe, err := m.spanReader.GetRequestToNode(ctx, query)
 	return retMe, err
 }
 
