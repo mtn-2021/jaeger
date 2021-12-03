@@ -48,6 +48,10 @@ type Reader interface {
 	// known to the backend from spans within its retention period.
 	GetOperations(ctx context.Context, query OperationQueryParameters) ([]Operation, error)
 
+	GetNodes(ctx context.Context) (map[string]NodeServices, error)
+	GetNodeStatus(ctx context.Context, query *RequestToNodeQuery) ([]DetailLogs, error)
+	GetRequestToNode(ctx context.Context, query *RequestToNodeQuery) ([]DetailLogs, error)
+
 	// FindTraces returns all traces matching query parameters. There's currently
 	// an implementation-dependent abiguity whether all query filters (such as
 	// multiple tags) must apply to the same span within a trace, or can be satisfied
@@ -85,4 +89,21 @@ type OperationQueryParameters struct {
 type Operation struct {
 	Name     string
 	SpanKind string
+}
+
+type NodeServices struct {
+	Name []string
+}
+
+type RequestToNodeQuery struct {
+	Node string
+	Service string
+	StartTimeMin time.Time
+	StartTimeMax time.Time
+    Interval time.Time
+}
+
+type DetailLogs struct {
+	OperationName string
+	Logs []model.Log
 }

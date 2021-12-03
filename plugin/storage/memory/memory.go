@@ -181,6 +181,16 @@ func (m *Store) copyTrace(trace *model.Trace) (*model.Trace, error) {
 	return copied, err
 }
 
+func (m *Store) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
+	return nil,errors.New("GetNodes not implemented")
+}
+func (m *Store) GetNodeStatus(ctx context.Context, query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil,errors.New("GetNodeStatus not implemented")
+}
+func (m *Store) GetRequestToNode(ctx context.Context, query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil,errors.New("GetRequestToNode not implemented")
+}
+
 // GetServices returns a list of all known services
 func (m *Store) GetServices(ctx context.Context) ([]string, error) {
 	m.RLock()

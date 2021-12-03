@@ -49,6 +49,7 @@ type QueryService struct {
 	spanReader       spanstore.Reader
 	dependencyReader dependencystore.Reader
 	options          QueryServiceOptions
+
 }
 
 // NewQueryService returns a new QueryService.
@@ -75,6 +76,16 @@ func (qs QueryService) GetTrace(ctx context.Context, traceID model.TraceID) (*mo
 		trace, err = qs.options.ArchiveSpanReader.GetTrace(ctx, traceID)
 	}
 	return trace, err
+}
+
+func (qs QueryService) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
+	return qs.spanReader.GetNodes(ctx)
+}
+func (qs QueryService) GetNodeStatus(ctx context.Context, query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return qs.spanReader.GetNodeStatus(ctx, query)
+}
+func (qs QueryService) GetRequestToNode(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return qs.spanReader.GetRequestToNode(ctx, query)
 }
 
 // GetServices is the queryService implementation of spanstore.Reader.GetServices

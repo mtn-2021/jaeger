@@ -57,6 +57,17 @@ func (r *archiveReader) GetTrace(ctx context.Context, traceID model.TraceID) (*m
 	return readTrace(stream)
 }
 
+// GetNodes can't used
+func (r *archiveReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
+	return nil, errors.New("GetNodes not implemented")
+}
+func (r *archiveReader) GetNodeStatus(ctx context.Context, query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil, errors.New("GetRequestToNode not implemented")
+}
+func (r *archiveReader) GetRequestToNode(ctx context.Context, query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil, errors.New("GetRequestToNode not implemented")
+}
+
 // GetServices not used in archiveReader
 func (r *archiveReader) GetServices(ctx context.Context) ([]string, error) {
 	return nil, errors.New("GetServices not implemented")

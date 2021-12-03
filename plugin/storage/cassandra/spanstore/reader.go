@@ -68,6 +68,29 @@ const (
 	// limitMultiple exists because many spans that are returned from indices can have the same trace, limitMultiple increases
 	// the number of responses from the index, so we can respect the user's limit value they provided.
 	limitMultiple = 3
+
+	queryGetByKeyPerPartition = `
+		SELECT tag_value, service_name
+		FROM tag_index 
+		WHERE tag_key = ?
+		PER PARTITION LIMIT 1` // used secondary index (require create new table) primary-key cluster-value,start,service,
+	queryByTagNoLimit = `
+        SELECT trace_id, span_id
+        FROM tag_index
+        WHERE service_name = ? AND tag_key = ? AND tag_value = ? AND start_time > ? AND start_time < ?
+        ORDER BY start_time DESC        
+        `
+	queryGetSpanLogs = `
+        SELECT logs, operation_name
+        FROM traces
+        WHERE trace_id = ? AND span_id = ?
+        `
+	queryGetIdsByTagValue = `
+        SELECT trace_id, span_id
+        FROM tag_index 
+		WHERE tag_key = ? AND tag_value = ? AND start_time > ? AND start_time < ?
+		ALLOW FILTERING
+        ` // used arrow filtering (require create new table) primary-key cluster-value
 )
 
 var (
@@ -401,6 +424,122 @@ func (s *SpanReader) queryByService(ctx context.Context, tq *spanstore.TraceQuer
 		tq.NumTraces*limitMultiple,
 	).PageSize(0)
 	return s.executeQuery(span, query, s.metrics.queryServiceNameIndex)
+}
+
+func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
+	var node string
+	var service string
+	nodes := map[string]spanstore.NodeServices{}
+	iter := s.session.Query(queryGetByKeyPerPartition,"peer.ipv4").Iter()
+	for iter.Scan(&node, &service) {
+		nodes[node] = spanstore.NodeServices{
+			Name: append(nodes[node].Name, service),
+		}
+	}
+
+	err := iter.Close()
+	if err != nil {
+		return nil, err
+	}
+	return nodes, err
+}
+
+func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	searchIter := s.session.Query(
+		queryGetIdsByTagValue,
+		"checkNode",
+		query.Node,
+		model.TimeAsEpochMicroseconds(query.StartTimeMin),
+		model.TimeAsEpochMicroseconds(query.StartTimeMax),
+		).Iter()
+	var traceId dbmodel.TraceID
+	var spanId int64
+	var logs []dbmodel.Log
+	var operationName string
+	var retMe []spanstore.DetailLogs
+	for searchIter.Scan(&traceId,&spanId,) {
+		statusIter := s.session.Query(
+			queryGetSpanLogs,
+			traceId,
+			spanId,
+			).Iter()
+		for statusIter.Scan(&logs,&operationName) {
+			spanLogs, err := dbmodel.FromDBLogs(logs)
+			if err != nil {
+				return nil, err
+			}
+			statusCheckSpan := spanstore.DetailLogs{
+				OperationName: operationName,
+				Logs: spanLogs,
+			}
+			retMe = append(retMe,statusCheckSpan)
+		}
+		err := statusIter.Close()
+		if err != nil {
+			return nil, fmt.Errorf("error reading span from storage: %w", err)
+		}
+	}
+	err := searchIter.Close()
+	if err != nil {
+		return nil, err
+	}
+	return retMe,err
+
+}
+
+func (s *SpanReader) GetRequestToNode(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs,error) {
+	var searchQuery cassandra.Query
+	if query.Service == "all" {
+		searchQuery = s.session.Query(
+			queryGetIdsByTagValue,
+			"peer.ipv4",
+			query.Node,
+			model.TimeAsEpochMicroseconds(query.StartTimeMin),
+			model.TimeAsEpochMicroseconds(query.StartTimeMax),
+			)
+	} else {
+		searchQuery = s.session.Query(
+			queryByTagNoLimit,
+			query.Service,
+			"peer.ipv4",
+			query.Node,
+			model.TimeAsEpochMicroseconds(query.StartTimeMin),
+			model.TimeAsEpochMicroseconds(query.StartTimeMax),
+		)
+	}
+	searchIter := searchQuery.Iter()
+	var traceId dbmodel.TraceID
+	var spanId int64
+	var logs []dbmodel.Log
+	var operationName string
+	var retMe []spanstore.DetailLogs
+	for searchIter.Scan(&traceId, &spanId) {
+		logIter := s.session.Query(
+			queryGetSpanLogs,
+			traceId,
+			spanId,
+		).Iter()
+		for logIter.Scan(&logs, &operationName) {
+			spanLogs, err := dbmodel.FromDBLogs(logs)
+			if err != nil {
+				return nil, err
+			}
+			requestSpan := spanstore.DetailLogs{
+				OperationName: operationName,
+				Logs: spanLogs,
+			}
+			retMe = append(retMe,requestSpan)
+		}
+		err := logIter.Close()
+		if err != nil {
+			return nil, fmt.Errorf("error reading span from storage: %w", err)
+		}
+	}
+	err := searchIter.Close()
+	if err != nil {
+		return nil, err
+	}
+	return retMe,err
 }
 
 func (s *SpanReader) executeQuery(span opentracing.Span, query cassandra.Query, tableMetrics *casMetrics.Table) (dbmodel.UniqueTraceIDs, error) {

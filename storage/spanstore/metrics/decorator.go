@@ -31,6 +31,7 @@ type ReadMetricsDecorator struct {
 	findTracesMetrics    *queryMetrics
 	findTraceIDsMetrics  *queryMetrics
 	getTraceMetrics      *queryMetrics
+	getNodesMetrics      *queryMetrics
 	getServicesMetrics   *queryMetrics
 	getOperationsMetrics *queryMetrics
 }
@@ -94,6 +95,19 @@ func (m *ReadMetricsDecorator) GetTrace(ctx context.Context, traceID model.Trace
 	start := time.Now()
 	retMe, err := m.spanReader.GetTrace(ctx, traceID)
 	m.getTraceMetrics.emit(err, time.Since(start), 1)
+	return retMe, err
+}
+
+func (m *ReadMetricsDecorator) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
+	retMe, err := m.spanReader.GetNodes(ctx)
+	return retMe, err
+}
+func (m *ReadMetricsDecorator) GetNodeStatus(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	retMe, err := m.spanReader.GetNodeStatus(ctx, query)
+	return retMe, err
+}
+func (m *ReadMetricsDecorator) GetRequestToNode(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	retMe, err := m.spanReader.GetRequestToNode(ctx, query)
 	return retMe, err
 }
 

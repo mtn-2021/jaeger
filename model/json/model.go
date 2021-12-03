@@ -115,3 +115,18 @@ type Operation struct {
 	Name     string `json:"name"`
 	SpanKind string `json:"spanKind"`
 }
+
+type Node struct {
+	Address string `json:"address"`
+	Services []string `json:"services"`
+}
+
+type NodeDetail struct {
+	RequestSpan []DetailLogs `json:"request"`
+	StatusCheckSpan []DetailLogs `json:"status"`
+}
+
+type DetailLogs struct {
+	OperationName string `json:"operationName"`
+	Logs []Log `json:"logs"`
+}

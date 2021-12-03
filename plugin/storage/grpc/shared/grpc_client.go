@@ -106,6 +106,17 @@ func (c *grpcClient) ArchiveSpanWriter() spanstore.Writer {
 	return &archiveWriter{client: c.archiveWriterClient}
 }
 
+// GetNodes can't used
+func (c *grpcClient) GetNodes(ctx context.Context) (map[string]spanstore.NodeServices, error) {
+	return nil, fmt.Errorf("GetNodes not implemented")
+}
+func (c *grpcClient) GetNodeStatus(ctx context.Context, query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil, fmt.Errorf("GetNodeStatus not implemented")
+}
+func (c *grpcClient) GetRequestToNode(ctx context.Context, query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	return nil, fmt.Errorf("GetRequestToNode not implemented")
+}
+
 // GetTrace takes a traceID and returns a Trace associated with that traceID
 func (c *grpcClient) GetTrace(ctx context.Context, traceID model.TraceID) (*model.Trace, error) {
 	stream, err := c.readerClient.GetTrace(upgradeContext(ctx), &storage_v1.GetTraceRequest{

@@ -149,6 +149,12 @@ func (fd fromDomain) convertKeyValuesString(keyValues model.KeyValues) []json.Ke
 	return out
 }
 
+func ConvertLogs(logs []model.Log) []json.Log {
+	fd := fromDomain{}
+	fd.convertKeyValuesFunc = fd.convertKeyValues
+	return fd.convertLogs(logs)
+}
+
 func (fd fromDomain) convertLogs(logs []model.Log) []json.Log {
 	out := make([]json.Log, len(logs))
 	for i, log := range logs {

@@ -139,6 +139,10 @@ func (c converter) fromDBTag(tag *KeyValue) (model.KeyValue, error) {
 	return model.KeyValue{}, fmt.Errorf("invalid ValueType in %+v", tag)
 }
 
+func FromDBLogs(logs []Log) ([]model.Log, error) {
+	return converter{}.fromDBLogs(logs)
+}
+
 func (c converter) fromDBLogs(logs []Log) ([]model.Log, error) {
 	retMe := make([]model.Log, len(logs))
 	for i, l := range logs {
