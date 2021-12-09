@@ -178,11 +178,11 @@ func (aH *APIHandler) getNodes(w http.ResponseWriter, r *http.Request) {
 }
 
 func (aH *APIHandler) getNodeDetail(w http.ResponseWriter, r *http.Request) {
-	startTime, err := aH.queryParser.parseTime(startTimeParam,r)
+	startTime, err := aH.queryParser.parseTime(r,startTimeParam,1)
 	if aH.handleError(w, err, http.StatusInternalServerError){
 		return
 	}
-	endTime, err := aH.queryParser.parseTime(endTimeParam,r)
+	endTime, err := aH.queryParser.parseTime(r,endTimeParam,1)
 	if aH.handleError(w, err, http.StatusInternalServerError){
 		return
 	}
