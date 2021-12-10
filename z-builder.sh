@@ -1,3 +1,4 @@
+make build-ui
 cd jaeger-ui
 npm run build
 cd ..
