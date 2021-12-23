@@ -73,7 +73,8 @@ const (
 		SELECT tag_value, service_name
 		FROM tag_index 
 		WHERE tag_key = ?
-		GROUP BY tag_value, service_name` // used secondary index (require create new table) primary-key cluster-value,start,service,
+		PER PARTITION LIMIT 1` // used secondary index (require create new table) primary-key cluster-value,start,service,
+		                       // cant use GROUP BY because dont include primary key
 	queryByTagNoLimit = `
         SELECT trace_id, span_id
         FROM tag_index
