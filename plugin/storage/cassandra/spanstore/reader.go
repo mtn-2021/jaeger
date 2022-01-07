@@ -433,6 +433,7 @@ func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeSer
 	nodes := map[string]spanstore.NodeServices{}
 	iter := s.session.Query(queryGetByKeyPerPartition,"peer.ipv4").Iter()
 	for iter.Scan(&node, &service) {
+	    fmt.Println(node)
 		nodes[node] = spanstore.NodeServices{
 			Name: append(nodes[node].Name, service),
 		}
