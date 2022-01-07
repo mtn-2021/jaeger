@@ -446,12 +446,6 @@ func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeSer
 }
 
 func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
-	fmt.Println("in status reader :")
-	fmt.Println(query.Node)
-	fmt.Println(query.StartTimeMin)
-	fmt.Println(model.TimeAsEpochMicroseconds(query.StartTimeMin))
-	fmt.Println(model.TimeAsEpochMicroseconds(query.StartTimeMax))
-
 	searchIter := s.session.Query(
 		queryGetIdsByTagValue,
 		"checkNode",
@@ -464,15 +458,12 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 	var logs []dbmodel.Log
 	var operationName string
 	var retMe []spanstore.DetailLogs
-	fmt.Println(searchIter)
 	for searchIter.Scan(&traceId,&spanId,) {
 		statusIter := s.session.Query(
 			queryGetSpanLogs,
 			traceId,
 			spanId,
 			).Iter()
-		fmt.Println(spanId)
-		fmt.Println(statusIter)
 		for statusIter.Scan(&logs,&operationName) {
 			spanLogs, err := dbmodel.FromDBLogs(logs)
 			if err != nil {
@@ -483,7 +474,6 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 				Logs: spanLogs,
 			}
 			retMe = append(retMe,statusCheckSpan)
-			fmt.Println(statusCheckSpan)
 		}
 		err := statusIter.Close()
 		if err != nil {
@@ -494,8 +484,6 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 	if err != nil {
 		return nil, err
 	}
-	fmt.Print("result: ")
-	fmt.Println(retMe)
 	return retMe,err
 
 }

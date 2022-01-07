@@ -192,19 +192,16 @@ func (aH *APIHandler) getNodeDetail(w http.ResponseWriter, r *http.Request) {
 		StartTimeMin: startTime,
 		StartTimeMax: endTime,
 	}
-	fmt.Println("test")
 	reqResult, err := aH.queryService.GetRequestToNode(r.Context(),&nodeQuery)
 	if aH.handleError(w, err, http.StatusInternalServerError){
 		return
 	}
-	fmt.Println(reqResult)
 	request := aH.convertDetailToUi(reqResult)
 
 	steResult, err := aH.queryService.GetNodeStatus(r.Context(),&nodeQuery)
 	if aH.handleError(w, err, http.StatusInternalServerError){
 		return
 	}
-	fmt.Println(steResult)
 	status := aH.convertDetailToUi(steResult)
 
 	data := ui.NodeDetail{
