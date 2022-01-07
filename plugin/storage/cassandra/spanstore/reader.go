@@ -453,8 +453,8 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 		queryGetIdsByTagValue,
 		"checkNode",
 		query.Node,
-		model.TimeAsEpochMicroseconds(query.StartTimeMin),
-		model.TimeAsEpochMicroseconds(query.StartTimeMax),
+		model.TimeAsEpochMicroseconds(query.StartTimeMin) * 1000,
+		model.TimeAsEpochMicroseconds(query.StartTimeMax) * 1000,
 		).Iter()
 	var traceId dbmodel.TraceID
 	var spanId int64
