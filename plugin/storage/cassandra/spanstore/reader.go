@@ -466,7 +466,7 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 			traceId,
 			spanId,
 			).Iter()
-		fmt.Println(traceId + " " + span_id)
+		fmt.Println(span_id)
 		fmt.Println(statusIter)
 		for statusIter.Scan(&logs,&operationName) {
 			spanLogs, err := dbmodel.FromDBLogs(logs)
