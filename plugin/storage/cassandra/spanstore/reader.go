@@ -470,6 +470,7 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 			traceId,
 			spanId,
 			).Iter()
+		fmt.Println("in reporter search")
 		fmt.Println(spanId)
 		fmt.Println(statusIter)
 		for statusIter.Scan(&logs,&operationName) {
@@ -482,6 +483,7 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 				Logs: spanLogs,
 			}
 			retMe = append(retMe,statusCheckSpan)
+			fmt.Println("in status search")
 			fmt.Println(statusCheckSpan)
 		}
 		err := statusIter.Close()
