@@ -446,6 +446,7 @@ func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeSer
 }
 
 func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
+	fmt.Println("in reader")
 	searchIter := s.session.Query(
 		queryGetIdsByTagValue,
 		"checkNode",
@@ -458,6 +459,7 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 	var logs []dbmodel.Log
 	var operationName string
 	var retMe []spanstore.DetailLogs
+	fmt.Println(searchIter)
 	for searchIter.Scan(&traceId,&spanId,) {
 		statusIter := s.session.Query(
 			queryGetSpanLogs,
