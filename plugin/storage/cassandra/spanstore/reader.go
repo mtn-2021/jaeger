@@ -446,9 +446,6 @@ func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeSer
 }
 
 func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
-	fmt.Println(query.StartTimeMin)
-	fmt.Println(model.TimeAsEpochMicroseconds(query.StartTimeMin))
-	fmt.Println(model.TimeAsEpochMicroseconds(query.StartTimeMax))
 	searchIter := s.session.Query(
 		queryGetIdsByTagValue,
 		"checkNode",
