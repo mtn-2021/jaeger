@@ -178,7 +178,7 @@ func (aH *APIHandler) getNodes(w http.ResponseWriter, r *http.Request) {
 }
 
 func (aH *APIHandler) getNodeDetail(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(startTimeParam)
+	fmt.Println(r)
 	startTime, err := aH.queryParser.parseTime(r,startTimeParam,1)
 	fmt.Println(startTime)
 	if aH.handleError(w, err, http.StatusInternalServerError){
