@@ -433,7 +433,6 @@ func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeSer
 	nodes := map[string]spanstore.NodeServices{}
 	iter := s.session.Query(queryGetByKeyPerPartition,"peer.ipv4").Iter()
 	for iter.Scan(&node, &service) {
-	    fmt.Println(node)
 		nodes[node] = spanstore.NodeServices{
 			Name: append(nodes[node].Name, service),
 		}
@@ -449,6 +448,7 @@ func (s *SpanReader) GetNodes(ctx context.Context) (map[string]spanstore.NodeSer
 func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestToNodeQuery) ([]spanstore.DetailLogs, error) {
 	fmt.Println("in status reader :")
 	fmt.Println(query.Node)
+	fmt.Println(query.startTimeMin)
 	fmt.Println(model.TimeAsEpochMicroseconds(query.StartTimeMin))
 	fmt.Println(model.TimeAsEpochMicroseconds(query.StartTimeMax))
 
@@ -471,7 +471,6 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 			traceId,
 			spanId,
 			).Iter()
-		fmt.Println("in reporter search")
 		fmt.Println(spanId)
 		fmt.Println(statusIter)
 		for statusIter.Scan(&logs,&operationName) {
@@ -484,7 +483,6 @@ func (s *SpanReader) GetNodeStatus(ctx context.Context,query *spanstore.RequestT
 				Logs: spanLogs,
 			}
 			retMe = append(retMe,statusCheckSpan)
-			fmt.Println("in status search")
 			fmt.Println(statusCheckSpan)
 		}
 		err := statusIter.Close()
