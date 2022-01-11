@@ -495,8 +495,8 @@ func (s *SpanReader) GetRequestToNode(ctx context.Context,query *spanstore.Reque
 			queryGetIdsByTagValue,
 			"peer.ipv4",
 			query.Node,
-			model.TimeAsEpochMicroseconds(query.StartTimeMin),
-			model.TimeAsEpochMicroseconds(query.StartTimeMax),
+			model.TimeAsEpochMicroseconds(query.StartTimeMin) * 1000,
+			model.TimeAsEpochMicroseconds(query.StartTimeMax) * 1000,
 			)
 	} else {
 		searchQuery = s.session.Query(
@@ -504,8 +504,8 @@ func (s *SpanReader) GetRequestToNode(ctx context.Context,query *spanstore.Reque
 			query.Service,
 			"peer.ipv4",
 			query.Node,
-			model.TimeAsEpochMicroseconds(query.StartTimeMin),
-			model.TimeAsEpochMicroseconds(query.StartTimeMax),
+			model.TimeAsEpochMicroseconds(query.StartTimeMin) * 1000,
+			model.TimeAsEpochMicroseconds(query.StartTimeMax) * 1000,
 		)
 	}
 	searchIter := searchQuery.Iter()
